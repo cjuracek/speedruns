@@ -29,6 +29,6 @@ if __name__ == '__main__':
         wr_date = datetime.strptime(wr_date, '%Y-%m-%d')
 
         if is_world_record(wr_date):
-            print("NEW WORLD RECORD FOR" + game)
+            print(f'NEW WORLD RECORD FOR {game} ON {wr_date}')
         else:
-            print("No new world records for " + game)
+            print(f'No new world records for {game} since {wr_date}')
