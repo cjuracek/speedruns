@@ -1,17 +1,20 @@
 from datetime import datetime, timedelta
 import requests
 import json
+import time
 
 
-game_categories = {'sm64': '120_Star',
-                   'smo': 'Any',
-                   'sms': '120_Shines',
-                   'smb1': 'Any',
-                   'botw': 'Any',
-                   'supermonkeyball': 'Expert',
-                   'supermonkeyball2': 'Story_Mode',
-                   'twwhd': 'Any',
-                   'oot': 'Any'}
+game_categories = {'sm64': ['120_Star', '70_Star', '16_Star', '1_Star', '0_Star'],
+                   'smo': ['Any'],
+                   'sms': ['120_Shines', 'Any'],
+                   'smb1': ['Any'],
+                   'botw': ['Any'],
+                   'supermonkeyball': ['Expert'],
+                   'supermonkeyball2': ['Story_Mode'],
+                   'twwhd': ['Any'],
+                   'oot': ['Any'],
+                   'celeste': ['Any'],
+                   'smb3': ['100']}
 
 game_names = {'sm64': 'Super Mario 64',
               'smo': 'Super Mario Odyssey',
@@ -21,7 +24,9 @@ game_names = {'sm64': 'Super Mario 64',
               'supermonkeyball': 'Super Monkey Ball',
               'supermonkeyball2': 'Super Monkey Ball 2',
               'twwhd': 'Wind Waker HD',
-              'oot': 'Ocarina of Time'}
+              'oot': 'Ocarina of Time',
+              'celeste': 'Celeste',
+              'smb3': 'Super Mario Bros. 3'}
 
 
 def is_new_wr(wr_date):
@@ -37,15 +42,19 @@ if __name__ == '__main__':
 
     # Example URL: 'https://www.speedrun.com/api/v1/leaderboards/o1y9wo6q/category/7dgrrxk4?top=1'
     base_url = 'https://www.speedrun.com/api/v1/leaderboards/'
-    for game, category in game_categories.items():
-        url = f'{base_url}{game}/category/{category}?top=1'
-        r = requests.get(url)
-        game_info = json.loads(r.text)
-        wr_date_str = get_wr_date(game_info)
-        wr_date = datetime.strptime(wr_date_str, '%Y-%m-%d')
+    for game, categories in game_categories.items():
+        for category in categories:
+            url = f'{base_url}{game}/category/{category}?top=1'
+            r = requests.get(url)
+            game_info = json.loads(r.text)
+            wr_date_str = get_wr_date(game_info)
+            wr_date = datetime.strptime(wr_date_str, '%Y-%m-%d')
 
-        if is_new_wr(wr_date):
-            print(f'NEW WORLD RECORD FOR {game} ON {wr_date_str}')
-        else:
-            time_diff = datetime.today() - wr_date
-            print(f'{game_names.get(game)}: {category} No new world records since {wr_date_str} ({time_diff.days} Days)')
+            if is_new_wr(wr_date):
+                print(f'NEW WORLD RECORD FOR {game} ON {wr_date_str}')
+            else:
+                time_diff = datetime.today() - wr_date
+                print(f'{game_names.get(game)}: {category} No new world records since '
+                      f'{wr_date_str} ({time_diff.days} Days)')
+
+            time.sleep(1)
