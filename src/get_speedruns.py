@@ -3,12 +3,12 @@ import requests
 import json
 
 
-games = {"sm64": "wkpoo02r",
-         "smo": "w20w1lzd",
-         "sms": "n2y3r8do"}#, "z27o9gd0"}
+games = {"sm64": "120_Star",
+         "smo": "Any",
+         "sms": "120_Shines"}#, "z27o9gd0"}
 
 
-def is_world_record(wr_date):
+def is_new_wr(wr_date):
     past = datetime.today() - timedelta(weeks=1)
     return wr_date > past
 
@@ -25,10 +25,11 @@ if __name__ == '__main__':
         url = f'{base_url}{game}/category/{category}?top=1'
         r = requests.get(url)
         game_info = json.loads(r.text)
-        wr_date = get_wr_date(game_info)
-        wr_date = datetime.strptime(wr_date, '%Y-%m-%d')
+        wr_date_str = get_wr_date(game_info)
+        wr_date = datetime.strptime(wr_date_str, '%Y-%m-%d')
 
-        if is_world_record(wr_date):
-            print(f'NEW WORLD RECORD FOR {game} ON {wr_date}')
+        if is_new_wr(wr_date):
+            print(f'NEW WORLD RECORD FOR {game} ON {wr_date_str}')
         else:
-            print(f'No new world records for {game} since {wr_date}')
+            time_diff = datetime.today() - wr_date
+            print(f'{game} : {category} No new world records since {wr_date_str} ({time_diff.days} Days)')
