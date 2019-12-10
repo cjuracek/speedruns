@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 import requests
 import json
 import time
+import smtplib, ssl
 
 
 game_categories = {'sm64': ['120_Star', '70_Star', '16_Star', '1_Star', '0_Star'],
@@ -46,8 +47,8 @@ if __name__ == '__main__':
         for category in categories:
             url = f'{base_url}{game}/category/{category}?top=1'
             r = requests.get(url)
-            game_info = json.loads(r.text)
-            wr_date_str = get_wr_date(game_info)
+            wr_info = json.loads(r.text)
+            wr_date_str = get_wr_date(wr_info)
             wr_date = datetime.strptime(wr_date_str, '%Y-%m-%d')
 
             if is_new_wr(wr_date):
@@ -58,3 +59,19 @@ if __name__ == '__main__':
                       f'{wr_date_str} ({time_diff.days} Days)')
 
             time.sleep(1)
+
+    # Send email
+    # https://realpython.com/python-send-email/
+    port = 465
+    password = input('Type your password then press enter: ')
+
+    # Create a secure SSL context
+    context = ssl.create_default_context()
+
+    email = 'cjuracektest@gmail.com'
+    subject = 'Speed Runs'
+    body = 'This is a Python message'
+    message = f'Subject: {subject} \n\n {body}'
+    with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
+        server.login(email, password)
+        server.sendmail(email, email, message)
